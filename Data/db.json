@@ -1,0 +1,130 @@
+{
+  "users": [
+    {
+      "firstName": "Deogracious",
+      "lastName": "",
+      "email": "deomosweta265@gmail.com",
+      "phone": "0712345678",
+      "password": "Deo12345",
+      "role": "user",
+      "id": "sDVLSYyW7Uo"
+    },
+    {
+      "firstName": "Jane",
+      "lastName": "Mbogo",
+      "email": "jmbogo@gmail.com",
+      "phone": "0712345678",
+      "password": "Jane1234",
+      "role": "admin",
+      "id": "kOFjUxy9cIk"
+    },
+    {
+      "firstName": "Juma",
+      "lastName": "Anderson",
+      "email": "jumaanderson@gmail.com",
+      "phone": "0712345678",
+      "password": "Juma1234",
+      "role": "user",
+      "id": "xHRd3nO9qZE"
+    },
+    {
+      "firstName": "Julia",
+      "lastName": "Sanders",
+      "email": "juliasanders@gmail.com",
+      "phone": "0712345678",
+      "password": "Julia123",
+      "role": "staff",
+      "id": "94E2P4iuH4s"
+    },
+    {
+      "id": "Wv0oJzrj6Hg",
+      "firstName": "John",
+      "lastName": "Juma",
+      "email": "jjuma2@gmail.com",
+      "phone": "0712345678",
+      "password": "Juma1234",
+      "role": "user"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "24V1GJzuqXk",
+      "userId": "sDVLSYyW7Uo",
+      "date": "2026-04-16T11:35",
+      "service": "basic",
+      "car": "KDB 573V",
+      "bookingStatus": "completed",
+      "status": "approved"
+    },
+    {
+      "id": "J5OWYzU0KRo",
+      "userId": "sDVLSYyW7Uo",
+      "date": "2026-04-17T13:55",
+      "service": "premium",
+      "car": "KZX 543X",
+      "bookingStatus": "completed"
+    }
+  ],
+  "washes": [
+    {
+      "id": "UhYZQ5qqCp8",
+      "car": "KXV 753V",
+      "service": "basic",
+      "status": "in-progress",
+      "date": "2026-04-15T11:53:02.924Z"
+    },
+    {
+      "id": "gXAFDbJe8MA",
+      "car": "KXV 753V",
+      "service": "basic",
+      "status": "completed",
+      "date": "2026-04-15T12:01:45.747Z"
+    },
+    {
+      "id": "cnLvtG6LSRY",
+      "car": "KXV 753V",
+      "service": "basic",
+      "status": "completed",
+      "date": "2026-04-15T14:50:22.683Z"
+    },
+    {
+      "id": "93hZPNGfIXs",
+      "car": "KXV 753V",
+      "service": "basic",
+      "status": "in-progress",
+      "date": "2026-04-15T14:51:50.556Z"
+    },
+    {
+      "id": "4DcpZlOBLtA",
+      "car": "KXV 753V",
+      "service": "basic",
+      "status": "completed",
+      "date": "2026-04-15T14:52:52.986Z"
+    },
+    {
+      "id": "zsA5SKb2rL4",
+      "car": "KXV 753V",
+      "service": "basic",
+      "status": "in-progress",
+      "date": "2026-04-15T14:55:20.343Z"
+    },
+    {
+      "id": "onCN8w10MnQ",
+      "car": "KXV 753V",
+      "service": "premium",
+      "status": "in-progress",
+      "date": "2026-04-15T14:56:04.567Z"
+    }
+  ],
+  "payments": [
+    {
+      "id": "6nVdbwr1D9c",
+      "car": "KXV 753V",
+      "method": "mpesa",
+      "amount": "10",
+      "paymentRef": "TXV45FRE3WST",
+      "date": "2026-04-16T19:44:24.538Z"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

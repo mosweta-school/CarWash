@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarNg'ara</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+
+  <!-- NAVBAR -->
+  <header class="bg-white shadow p-4 flex justify-between">
+    <div class="flex gap-4">
+      <h2 class="mr-2 font-bold pr-5">Car Ng'ara</h2>
+      <button class="hover:text-color-blue-500" onclick="navigate('home')" class="mr-2">Home</button>
+      <button onclick="navigate('about')" class="mr-2">About</button>
+      <button onclick="navigate('contact')">Contact</button>
+    </div>
+
+    <div id="nav-buttons">
+      <button onclick="navigate('login')" class="mr-2 text-blue-600">Login</button>
+      <button onclick="navigate('signup')" class="text-green-600">Sign Up</button>
+    </div>
+  </header>
+
+  <!-- CONTENT AREA -->
+  <main id="app" class="p-6"></main>
+    <script src="script.js"></script>
+</body>
+</html>
