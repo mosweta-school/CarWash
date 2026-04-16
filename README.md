@@ -111,7 +111,7 @@ The platform simulates a real-world workflow similar to dispatch systems (e.g., 
 1. Clone the repository:
 
    ```bash
-   git clone git@github.com:mosweta-school/Car-ngara-Car-Wash-Management-System.git
+   git clone https://github.com/mosweta-school/CarWash.git
    cd project-folder
    ```
 
