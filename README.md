@@ -66,11 +66,11 @@ The platform simulates a real-world workflow similar to dispatch systems (e.g., 
 
 ## 💰 Service Pricing
 
-| Service | Price |
-| ------- | ----- |
-| Basic   | $10   |
-| Premium | $20   |
-| Deluxe  | $35   |
+| Service | Price    |
+| ------- | -----    |
+| Basic   | Kes 500  |
+| Premium | Kes 1500 |
+| Deluxe  | Kes 3000 |
 
 ---
 
@@ -175,7 +175,7 @@ The platform simulates a real-world workflow similar to dispatch systems (e.g., 
 
 ## 👨‍💻 Author
 
-**Deogracious Morias**
+**Deogracious Moriasi**
 Student at Moringa school
 
 ---
