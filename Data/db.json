@@ -187,7 +187,6 @@
       "date": "2026-04-18T21:38",
       "bookingStatus": "started",
       "staffId": "94E2P4iuH4s"
-      
     },
     {
       "id": "v8imGsUpTzg",
@@ -196,7 +195,7 @@
       "carId": "car1",
       "serviceId": "1",
       "date": "2026-04-20T03:53",
-      "bookingStatus": "pending"
+      "bookingStatus": "approved"
     },
     {
       "id": "2XuvjDezqBs",
@@ -264,9 +263,9 @@
       "carId": "car1",
       "serviceId": "1",
       "type": "walk-in",
-      "status": "started",
+      "status": "completed",
       "date": "2026-04-18T18:15:38.663Z",
-      "paymentStatus": "unpaid"
+      "paymentStatus": "paid"
     },
     {
       "id": "fxw6BUYbojo",
@@ -275,9 +274,9 @@
       "carId": "car1",
       "serviceId": "1",
       "type": "walk-in",
-      "status": "started",
+      "status": "completed",
       "date": "2026-04-18T22:30:15.559Z",
-      "paymentStatus": "unpaid"
+      "paymentStatus": "paid"
     },
     {
       "id": "VqZdsux9uBM",
@@ -286,9 +285,9 @@
       "carId": "car3",
       "serviceId": "1",
       "type": "walk-in",
-      "status": "started",
+      "status": "completed",
       "date": "2026-04-18T22:33:01.373Z",
-      "paymentStatus": "unpaid"
+      "paymentStatus": "paid"
     }
   ],
   "payments": [
@@ -341,6 +340,43 @@
       "phone": null,
       "paymentRef": null,
       "date": "2026-04-18T17:07:33.306Z",
+      "status": "completed"
+    },
+    {
+      "id": "qmtiWQy72Yg",
+      "washId": "uSbTg1iE6RY",
+      "type": "walk-in",
+      "method": "cash",
+      "amount": 500,
+      "mpesaAmount": 0,
+      "cashAmount": 0,
+      "phone": null,
+      "paymentRef": null,
+      "date": "2026-04-21T14:34:14.551Z"
+    },
+    {
+      "id": "AKs7dXHn_zA",
+      "washId": "fxw6BUYbojo",
+      "type": "walk-in",
+      "method": "cash",
+      "amount": 500,
+      "mpesaAmount": 0,
+      "cashAmount": 0,
+      "phone": null,
+      "paymentRef": null,
+      "date": "2026-04-21T14:34:33.268Z"
+    },
+    {
+      "id": "ufahKn51iyY",
+      "washId": "VqZdsux9uBM",
+      "type": "walk-in",
+      "method": "cash",
+      "amount": 500,
+      "mpesaAmount": 0,
+      "cashAmount": 0,
+      "phone": null,
+      "paymentRef": null,
+      "date": "2026-04-21T15:36:47.834Z",
       "status": "completed"
     }
   ],

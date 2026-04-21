@@ -100,7 +100,7 @@ function navigate(page) {
         if (user) {
             loadDashboard(user);
         } else {
-            alert("Please login first");
+            showToast("Please login first", "error");
             renderLogin();
         }
     }
@@ -134,7 +134,25 @@ function logout() {
     localStorage.removeItem("user");
     updateNavBar(false);
     navigate("home");
-    alert("Logged out successfully!");
+    showToast("Logged out successfully!", "success");
+}
+
+// Helper Functions for better UX (Expert level)
+function showLoading() {
+    app.innerHTML = `<div class="flex justify-center items-center h-64">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+        <p class="ml-3 text-gray-600">Loading...</p>
+    </div>`;
+}
+
+function showToast(message, type = "success") {
+    const toast = document.createElement("div");
+    toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg text-white z-50 transition-all duration-300 ${
+        type === "success" ? "bg-green-500" : type === "error" ? "bg-red-500" : "bg-blue-500"
+    }`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
 }
 
 // RENDER FUNCTIONS
@@ -277,7 +295,7 @@ function renderContact() {
         </div>
     `;
 }
-//displays signup oage
+//displays signup page
 function renderSignup() {
     app.innerHTML = `
         <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow">
@@ -318,12 +336,12 @@ function signup() {
     // Check if user exists
     const users = JSON.parse(localStorage.getItem("users")) || [];
     if (users.find(u => u.email === email)) {
-        alert("Email already exists!");
+        showToast("Email already exists!", "error");
         return;
     }
     
     const newUser = {
-        id: Date.now(),
+        id: Date.now().toString(),
         firstName,
         lastName,
         email,
@@ -341,12 +359,12 @@ function signup() {
     })
     .then(res => res.json())
     .then(data => {
-        alert("Signup successfull! Please login.");
+        showToast("Signup successful! Please login.", "success");
         renderLogin();
     })
     .catch(err => {
         console.error("Error creating user", err);
-        alert("Failed to sign you up. Please try again.");
+        showToast("Failed to sign you up. Please try again.", "error");
     });
 }
 
@@ -385,15 +403,16 @@ function login() {
         if (data.length > 0) { 
             const user = data[0]; // store user session 
             localStorage.setItem("user", JSON.stringify(user)); 
-            alert("Login successful!");
+            showToast("Login successful!", "success");
              // next step: dashboards 
              console.log(user) 
              updateNavBar(true);
              loadDashboard(user); 
             } else { 
-                alert("Invalid login"); } 
-            }); 
-        }
+                showToast("Invalid email or password", "error"); 
+            } 
+        }); 
+    }
 
    
     function goToRegister(){
@@ -401,9 +420,11 @@ function login() {
     }
 
 // Customer DASHBOARD
+// Customer DASHBOARD
 function renderCustomerDashboard() {
     const user = JSON.parse(localStorage.getItem("user"));
-
+    
+    showLoading();
     
 Promise.all([
     fetch("http://localhost:5000/bookings").then(r => r.json()),
@@ -416,8 +437,7 @@ Promise.all([
         const currentWashes = washes.filter(w => 
     w.customerId === user.id &&
     (w.status === "started" || w.status === "completed") &&
-    w.paymentStatus === "unpaid"
-);//show washes belonging to this user that have either started or has completed but payment status is unpaid
+    w.paymentStatus === "unpaid");//show washes belonging to this user that have either started or has completed but payment status is unpaid
         const myWashes = washes.filter(w => w.customerId === user.id && w.status === "completed" );// shows wash history their status is completed
         const myPayments = payments.filter(w => w.washId === user.id );
         const userWashes = washes.filter(w => w.customerId === user.id && w.paymentStatus === "paid" );
@@ -476,34 +496,34 @@ const joinedMyPayments = joinPaymentsByWash(
         });
     });
 
-    loadUserCars(user.id)
-    loadUserBookings(user.id)
+    loadUserCars(user.id);
+    // REMOVED: loadUserBookings(user.id) - this function doesn't exist!
        
- //function for searching in table
+//function for searching in table
 function enableTableSearch(tableSelector, inputId) {
     const input = document.getElementById(inputId);
-
-    input.addEventListener("input", function () {
-        const filter = this.value.toLowerCase();
-        const rows = document.querySelectorAll(`${tableSelector} tbody tr`);
-
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(filter) ? "" : "none";
+    if(input) {
+        input.addEventListener("input", function () {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll(`${tableSelector} tbody tr`);
+            
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(filter) ? "" : "none";
+            });
         });
-    });
+    }
 }
 enableTableSearch("#paymentsTable", "tableSearch");
 // booking function to Set minimum date for booking to current date and time to prevent user from selecting a past date
             function setMinBookingDateTime() {
                 const input = document.getElementById("booking_date");
-
-                const now = new Date();
-                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-
-                const minDateTime = now.toISOString().slice(0, 16);
-
-                input.min = minDateTime;
+                if(input) {
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                    const minDateTime = now.toISOString().slice(0, 16);
+                    input.min = minDateTime;
+                }
             }
 //calls this function to make sure does not even select a past date in the first place
 setMinBookingDateTime();
@@ -511,7 +531,8 @@ setMinBookingDateTime();
         })
         .catch(err => {
             console.error(err);
-            alert("Error loading bookings");
+            showToast("Error loading bookings: " + err.message, "error");
+            app.innerHTML = `<div class="text-center text-red-500 p-8">Error loading dashboard: ${err.message}</div>`;
         });
         
     }
@@ -527,18 +548,20 @@ function loadUserCars(userId) {
     .then(([relations, cars]) => {
 
         const select = document.getElementById("booking_car");
-        select.innerHTML = `<option value="">Select Your Car</option>`;
+        if(select) {
+            select.innerHTML = `<option value="">Select Your Car</option>`;
 
-        relations.forEach(rel => {
-            const car = cars.find(c => c.id === rel.carId);
+            relations.forEach(rel => {
+                const car = cars.find(c => c.id === rel.carId);
 
-            if (car) {
-                const option = document.createElement("option");
-                option.value = car.id;
-                option.textContent = `${car.plateNumber} (${car.model})`;
-                select.appendChild(option);
-            }
-        });
+                if (car) {
+                    const option = document.createElement("option");
+                    option.value = car.id;
+                    option.textContent = `${car.plateNumber} (${car.model})`;
+                    select.appendChild(option);
+                }
+            });
+        }
     });
 }
 function bookingFormHTML() {
@@ -579,7 +602,7 @@ function bookingFormHTML() {
 function myBookingsHTML(bookings) {
     return `
         <div class="bg-white p-6 rounded-lg shadow">
-
+            <input type="text" id="searchBookings" placeholder="Search bookings..." class="w-full mb-4 p-2 border rounded">
             <h2 class="text-2xl font-bold mb-4">My Bookings</h2>
 
             ${bookings.length === 0 ? `
@@ -587,10 +610,9 @@ function myBookingsHTML(bookings) {
                     No bookings yet
                 </p>
             ` : `
-                <div class="space-y-4">
+                <div class="space-y-4" id="bookingsList">
                     ${bookings.map(b => `
-                        <div class="border rounded-lg p-4 shadow-sm">
-
+                        <div class="border rounded-lg p-4 shadow-sm booking-item">
                             <p><strong>Car:</strong> ${b.carPlate}</p>
                             <p><strong>Service:</strong> ${b.serviceName}</p>
                             <p><strong>Date:</strong> ${new Date(b.date).toLocaleString()}</p>
@@ -752,8 +774,7 @@ function myPaymentsHTML(myPayments){
     <h3 class="text-lg font-semibold mb-4">My Payments</h3>
 
     <div class="overflow-x-auto">
-        <table class="min-w-full border border-gray-200">
-                <input 
+        <input 
                 type="text" 
                 id="tableSearch" 
                 placeholder="Search car, service, status..."
@@ -821,18 +842,18 @@ function bookAppointment() {
 
     // this prevents users from selecting a past date and time from the backend side
     if (selectedDate < now) {
-        alert("You cannot select a past date or time.");
+        showToast("You cannot select a past date or time.", "error");
         return;
     }
 
     //this ensures that these fields are not empty before submission
     if (!date || !serviceId || !carId) {
-        alert("Please fill all fields");
+        showToast("Please fill all fields", "error");
         return;
     }
     
     const newBooking = {
-        id: Date.now(),
+        id: Date.now().toString(),
         customerId: user.id,
         staffId: null,
         carId,
@@ -850,12 +871,12 @@ function bookAppointment() {
     })
     .then(res => res.json())
     .then(data => {
-        alert("Booking submitted for approval!");
+        showToast("Booking submitted for approval!", "success");
         renderCustomerDashboard();
     })
     .catch(err => {
         console.error("Error booking appointment:", err);
-        alert("Failed to submit booking. Please try again.");
+        showToast("Failed to submit booking. Please try again.", "error");
     });
 }
 function joinBookings(bookings, cars, services) {
@@ -865,8 +886,8 @@ function joinBookings(bookings, cars, services) {
 
         return {
             ...b,
-            carPlate: car?.plateNumber,
-            serviceName: service?.name
+            carPlate: car?.plateNumber || "Unknown",
+            serviceName: service?.name || "Unknown"
         };
     });
 }
@@ -878,8 +899,8 @@ function joinWashes(washes, cars, services) {
 
         return {
             ...w,
-            carPlate: car?.plateNumber,
-            serviceName: service?.name
+            carPlate: car?.plateNumber || "Unknown",
+            serviceName: service?.name || "Unknown"
         };
     });
 }
@@ -892,8 +913,8 @@ function joinPaymentsByWash(washes, payments, cars, services) {
 
         return {
             ...wash,
-            carPlate: car?.plateNumber,
-            serviceName: service?.name,
+            carPlate: car?.plateNumber || "Unknown",
+            serviceName: service?.name || "Unknown",
 
             paymentStatus: payment ? "paid" : "unpaid",
             amount: payment?.amount || 0,
@@ -936,7 +957,7 @@ function cancelBooking(bookingId) {
         })
         .then(res => res?.json())
         .then(() => {
-            alert("Booking cancelled successfully!");
+            showToast("Booking cancelled successfully!", "success");
 
             // refresh UI depending on role
             if (user.role === "staff") {
@@ -949,10 +970,10 @@ function cancelBooking(bookingId) {
         })
         .catch(err => {
             if (err.message === "completed") {
-                alert("You cannot cancel a completed booking.");
+                showToast("You cannot cancel a completed booking.", "error");
             } else {
                 console.error(err);
-                alert("Failed to cancel booking. Please try again.");
+                showToast("Failed to cancel booking. Please try again.", "error");
             }
         });
 }
@@ -966,21 +987,39 @@ function renderStaffDashboard() {
     const user = JSON.parse(localStorage.getItem("user"));//stores information of current user in local storage
     const staffId = user.id// stores id of current staff for it to be sent to the booking and washing fields later for linking the tables
     
+    showLoading();
+    
 //fetches data from bookings, washes and payments in db.json
     Promise.all([
         fetch(`http://localhost:5000/bookings`).then(res => res.json()),
         fetch(`http://localhost:5000/washes`).then(res => res.json()),
         fetch(`http://localhost:5000/payments`).then(res => res.json()),
         fetch(`http://localhost:5000/cars`).then(res => res.json()),
-        fetch(`http://localhost:5000/services`).then(res => res.json())
+        fetch(`http://localhost:5000/services`).then(res => res.json()),
+        fetch(`http://localhost:5000/users`).then(res => res.json())
     ])
-    .then(([bookings, washes, payments, cars, services]) => {
+    .then(([bookings, washes, payments, cars, services, users]) => {
 const currentBookings = bookings.filter(b => b.bookingStatus === "approved" );//to only show bookings that have been approved
-const currentWashes = washes.filter(w => (w.status === "started" || "completed") && w.staffId === user.id && w.paymentStatus === "unpaid" ); // checks if wash status is in progress and is assigned to me as a staff then it displays here for me to complete and carry out payment
+const currentWashes = washes.filter(w => (w.status === "started" || w.status === "completed") && w.staffId === user.id && w.paymentStatus === "unpaid" ); // checks if wash status is in progress and is assigned to me as a staff then it displays here for me to complete and carry out payment
 const myWashes = washes.filter(w => w.paymentStatus === "paid" && w.staffId === user.id );// checks if wash status is completed and is assigned to me as a staff then it displays here for me to view.
 const bookingData= bookings //this stores information about booking to be used to populate washes table
 
-const joinedCurrentWashes = joinWashes(currentWashes, cars, services)
+// JOIN bookings with cars and services for proper display
+const joinedCurrentBookings = currentBookings.map(booking => {
+    const car = cars.find(c => c.id === booking.carId);
+    const service = services.find(s => s.id === booking.serviceId);
+    const customer = users.find(u => u.id === booking.customerId);
+    return {
+        ...booking,
+        carPlate: car?.plateNumber || "Unknown",
+        serviceName: service?.name || "Unknown",
+        customerName: customer ? `${customer.firstName} ${customer.lastName}` : "Unknown"
+    };
+});
+
+const joinedCurrentWashes = joinWashes(currentWashes, cars, services);
+const joinedCompleteWashes = joinWashes(myWashes, cars, services);
+        
         app.innerHTML = `
         <div class="max-w-7xl mx-auto p-4">
 
@@ -1030,9 +1069,9 @@ const joinedCurrentWashes = joinWashes(currentWashes, cars, services)
 
                 <!-- SERVICE -->
                 <select id="wash_service" class="w-full border p-2 rounded mb-4">
-                    <option value="basic">Basic</option>
-                    <option value="premium">Premium</option>
-                    <option value="deluxe">Deluxe</option>
+                    <option value="1">Basic - Kes 500</option>
+                    <option value="3">Premium - Kes 3000</option>
+                    <option value="2">Deluxe - Kes 1500</option>
                 </select>
 
                 <button onclick="walkInWash()"
@@ -1092,13 +1131,15 @@ const joinedCurrentWashes = joinWashes(currentWashes, cars, services)
             <!-- Bookings -->
 <div class="bg-white p-6 rounded-xl shadow mt-6">
     <h3 class="text-lg font-semibold mb-4">Current Bookings</h3>
+    <input type="text" id="searchStaffBookings" placeholder="Search bookings..." class="w-full mb-4 p-2 border rounded">
 
     <div class="overflow-x-auto">
-        <table class="min-w-full border border-gray-200">
+        <table class="min-w-full border border-gray-200" id="staffBookingsTable">
 
             <!-- HEADER -->
             <thead class="bg-gray-100 text-gray-700 text-sm">
                 <tr>
+                    <th class="p-3 text-left">Customer</th>
                     <th class="p-3 text-left">Car</th>
                     <th class="p-3 text-left">Service</th>
                     <th class="p-3 text-left">Date</th>
@@ -1109,19 +1150,19 @@ const joinedCurrentWashes = joinWashes(currentWashes, cars, services)
 
             <!-- BODY -->
             <tbody>
-            <tr class="border-t hover:bg-gray-50">
-            ${currentBookings.length === 0 
+            ${joinedCurrentBookings.length === 0 
                         ? `
                         <tr>
-                            <td colspan="5" class="p-3 text-center text-gray-500">
+                            <td colspan="6" class="p-3 text-center text-gray-500">
                                 No bookings yet
                             </td>
                         </tr>
                     `
-                : currentBookings.slice(-5).reverse().map(booking => `
-                    
-                        <td class="p-3 font-medium">${booking.car}</td>
-                        <td class="p-3 capitalize">${booking.service}</td>
+                : joinedCurrentBookings.slice(-5).reverse().map(booking => `
+                    <tr class="border-t hover:bg-gray-50">
+                        <td class="p-3 font-medium">${booking.customerName}</td>
+                        <td class="p-3">${booking.carPlate}</td>
+                        <td class="p-3 capitalize">${booking.serviceName}</td>
                         <td class="p-3 text-sm text-gray-500">
                             ${new Date(booking.date).toLocaleString()}
                         </td>
@@ -1140,132 +1181,99 @@ const joinedCurrentWashes = joinWashes(currentWashes, cars, services)
                         </td>
 
                          <td class="p-3 space-x-2">
-                                            ${booking.bookingStatus === 'approved' ? `
-                                                <button class="start-btn bg-yellow-400 text-white px-3 py-1 rounded text-xs hover:bg-yellow-500"
-                                                        data-id="${booking.id}">
-                                                    Start
-                                                </button>
-                                            ` : ''}
-
-                                            
-                                        </td>
-                                    </tr>
-                                `).join('')}
-                        </tbody>
+                            ${booking.bookingStatus === 'approved' ? `
+                                <button class="start-btn bg-yellow-400 text-white px-3 py-1 rounded text-xs hover:bg-yellow-500"
+                                        data-id="${booking.id}">
+                                    Start
+                                </button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
 
         </table>
     </div>
 </div>
+            <!-- Current Washes Table-->
              ${currentStaffWashesHTML(joinedCurrentWashes)}
 
-            <!-- Washes Table-->
+            <!-- Completed Washes Table-->
+            ${washesCompletedByStaff(joinedCompleteWashes)}
             
-            <!-- Washes Table-->
-            <div class="bg-white p-6 rounded-xl shadow mt-6">
-                <h3 class="text-lg font-semibold mb-4">My Washes</h3>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-gray-100 text-gray-600 text-sm">
-                                <th class="p-3">Car</th>
-                                <th class="p-3">Service</th>
-                                <th class="p-3">Status</th>
-                                <th class="p-3">Date</th>
-                                
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                        ${myWashes.length === 0 
-                            ? `
-                            <tr>
-                                <td colspan="5" class="p-3 text-center text-gray-500">
-                                    No washes completed
-                                </td>
-                            </tr>
-                         `
-                        :myWashes.slice(-5).reverse().map(w => `
-                                <tr class="border-b hover:bg-gray-50">
-                                    <td class="p-3 font-medium">${w.car}</td>
-                                    <td class="p-3 capitalize">${w.service}</td>
-
-                                    <td class="p-3">
-                                        <span class="
-                                            px-3 py-1 rounded-full text-xs font-semibold
-                                            ${w.status === 'completed'
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-yellow-100 text-yellow-700'}
-                                        ">
-                                            ${w.status}
-                                        </span>
-                                    </td>
-
-                                    <td class="p-3 text-sm text-gray-500">
-                                        ${new Date(w.date).toLocaleString()}
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
         `;
     
+    // Add search functionality
+    const searchInput = document.getElementById("searchStaffBookings");
+    if(searchInput) {
+        searchInput.addEventListener("input", function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#staffBookingsTable tbody tr");
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(filter) ? "" : "none";
+            });
+        });
+    }
     
 // event listener for stating a wash
         document.querySelectorAll(".start-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 //updates progress of the booking and assigns the booking to a particular staff
-                updateBookingStatus(btn.dataset.id, "started", staffId,);
+                updateBookingStatus(btn.dataset.id, "started", staffId);
                 //sends bookings data to wash table along with staff doing the wash
-                bookingWash(btn.dataset.id, bookings, staffId)
+                bookingWash(btn.dataset.id, bookings, staffId);
             });
         });
 //event listener for completing a wash
         document.querySelectorAll(".complete-btn").forEach(btn => {
             btn.addEventListener("click", () => {
                 //updates booking status to complete
-                updateBookingStatus(btn.dataset.id, "completed", staffId,);
+                updateBookingStatus(btn.dataset.id, "completed", staffId);
                 //updates wash status to complete 
                 updateWashStatus(btn.dataset.id, "completed");
             });
         });
         //event listener for initiating payment
         document.querySelectorAll(".pay-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-                // it gets the wash id
-                const washId = btn.dataset.id;
-                window.selectedWashId = washId;
-// wash of the particular wash id selected is fetched
-                fetch(`http://localhost:5000/washes/${washId}`)
-                .then(res => res.json())
-                .then(wash => {
-                    //this assigns the number plate of the car
-                    document.getElementById("payment_car").value = wash.car;
-                    document.getElementById("wash_type").value = wash.type;
-                    document.getElementById("wash_pay_service").value = wash.service;
-                    document.getElementById("booking_id").value = wash.bookingId || null;
+    btn.addEventListener("click", () => {
+        const washId = btn.dataset.id;
+        window.selectedWashId = washId;
 
-                    // Auto-fill default price based on the wash that was fetched
-                    const prices = {
-                        basic: 500,
-                        deluxe: 1500,
-                        premium: 3000
-                    };
-//this inputs the value based on the type of service wash
-                    document.getElementById("payment_total").value = prices[wash.service];
-                });
-            });
+        Promise.all([
+            fetch(`http://localhost:5000/washes/${washId}`).then(res => res.json()),
+            fetch(`http://localhost:5000/cars`).then(res => res.json()),
+            fetch(`http://localhost:5000/services`).then(res => res.json())
+        ])
+        .then(([wash, cars, services]) => {
+
+            const car = cars.find(c => c.id === wash.carId);
+            const service = services.find(s => s.id === wash.serviceId);
+
+            // ✅ Fill form properly
+            document.getElementById("payment_car").value = car?.plateNumber || "N/A";
+            document.getElementById("wash_type").value = wash.type;
+            document.getElementById("wash_pay_service").value = service?.name || "N/A";
+            document.getElementById("booking_id").value = wash.bookingId || "";
+
+            // ✅ Pricing based on service NAME
+            const prices = {
+                basic: 500,
+                deluxe: 1500,
+                premium: 3000
+            };
+
+            document.getElementById("payment_total").value =
+                prices[service?.name?.toLowerCase()] || 0;
         });
-        })
+    });
+});
+    })
         
         
     .catch(err => {
         console.error(err);
-        alert("Error loading data");
+        showToast("Error loading data", "error");
     });
 }
 
@@ -1332,7 +1340,7 @@ function currentStaffWashesHTML(currentWashes) {
                                     </button>
 
                                     
-                                                                    ` :""}
+                                                                    ` : ""}
                                 ${w.status === "completed" && w.paymentStatus === "unpaid" ? `
                                     <button class="pay-btn bg-green-300 text-green-800 px-2 py-1 rounded mr-2 hover:bg-green-400"
                                             data-id="${w.id}">
@@ -1340,7 +1348,7 @@ function currentStaffWashesHTML(currentWashes) {
                                     </button>
 
                                     
-                                                                    ` :""}
+                                                                    ` : ""}
                                                                     
                             </td>
                                 </tr>
@@ -1348,21 +1356,63 @@ function currentStaffWashesHTML(currentWashes) {
                         </tbody>
                     </table>
                 </div>
-            </div>`
-                        }
-//this is its corresponding function to help map the ids to enable display
+            </div>`;
+}
 
-function joinWashes(washes, cars, services) {
-    return washes.map(w => {
-        const car = cars.find(c => c.id === w.carId);// takes the car id from wash and maps it to a acar id in cars table in order to get the table info
-        const service = services.find(s => s.id === w.serviceId); // takes the service id from the particular wash and maps it to a a service id in services table in order to get the table info
+//this shows washes that have been completed by the staff and payments made
+//this function still uses joinWahes() function above to help to map out ids for service and carplate dsiplays same as the current washes above
+function washesCompletedByStaff(completedWashes) {
+    return `<div class="bg-white p-6 rounded-xl shadow mt-6">
+                <h3 class="text-lg font-semibold mb-4">My Washes</h3>
 
-        return {
-            ...w,
-            carPlate: car?.plateNumber, //returns vehicles plate number
-            serviceName: service?.name // returns service name of the particular wash is it basic
-        };
-    });
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 text-gray-600 text-sm">
+                                <th class="p-3">Car</th>
+                                <th class="p-3">Service</th>
+                                <th class="p-3">Status</th>
+                                <th class="p-3">Date</th>
+                                
+                             </tr>
+                        </thead>
+
+                        <tbody>
+                        ${completedWashes.length === 0 
+                            ? `
+                            <tr>
+                                <td colspan="5" class="p-3 text-center text-gray-500">
+                                    No washes completed
+                                </td>
+                            </tr>
+                         `
+                        :completedWashes.slice(-5).reverse().map(w => `
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td>${w.carPlate}</td>
+                                    <td>${w.serviceName}</td>
+
+                                    <td class="p-3">
+                                        <span class="
+                                            px-3 py-1 rounded-full text-xs font-semibold
+                                            ${w.status === 'completed'
+                                                ? 'bg-green-100 text-green-700'
+                                                : 'bg-yellow-100 text-yellow-700'}
+                                        ">
+                                            ${w.status}
+                                        </span>
+                                    </td>
+
+                                    <td class="p-3 text-sm text-gray-500">
+                                        ${new Date(w.date).toLocaleString()}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>`;
 }
 
 //staff dashboard API functions
@@ -1384,7 +1434,7 @@ function searchCustomerByPhone() {
             );
 
             if (!customer) {
-                alert("New customer — please fill details");
+                showToast("New customer — please fill details", "info");
                 return;
             }
 
@@ -1401,7 +1451,7 @@ function searchCustomerByPhone() {
         })
         .catch(err => {
             console.error("Error searching customer:", err);
-            alert("Search failed. Try again.");
+            showToast("Search failed. Try again.", "error");
         });
 }
 function loadCustomerCars(customerId) {
@@ -1410,18 +1460,20 @@ function loadCustomerCars(customerId) {
     .then(relations => {
 
         const select = document.getElementById("car_select");
-        select.innerHTML = `<option value="">Select existing car</option>`;
+        if(select) {
+            select.innerHTML = `<option value="">Select existing car</option>`;
 
-        relations.forEach(r => {
-            fetch(`http://localhost:5000/cars/${r.carId}`)
-            .then(res => res.json())
-            .then(car => {
-                const option = document.createElement("option");
-                option.value = car.id;
-                option.textContent = `${car.plateNumber} (${car.model || "Unknown"})`;
-                select.appendChild(option);
+            relations.forEach(r => {
+                fetch(`http://localhost:5000/cars/${r.carId}`)
+                .then(res => res.json())
+                .then(car => {
+                    const option = document.createElement("option");
+                    option.value = car.id;
+                    option.textContent = `${car.plateNumber} (${car.model || "Unknown"})`;
+                    select.appendChild(option);
+                });
             });
-        });
+        }
     });
 }
 function addCarField() {
@@ -1537,98 +1589,109 @@ async function registerCustomerWithCars() {
         });
     }
 
-    alert("Customer & cars registered successfully!");
+    showToast("Customer & cars registered successfully!", "success");
 }
 //this records wash of customers who walk in and is used when a staff records wash normally
-function walkInWash() {
+async function walkInWash() {
     const staff = JSON.parse(localStorage.getItem("user"));
 
-    const firstName = document.getElementById("walk_first_name")?.value;
-    const lastName = document.getElementById("walk_last_name")?.value;
+    const firstName = document.getElementById("walk_first_name").value;
+    const lastName = document.getElementById("walk_last_name").value;
     const phone = document.getElementById("walk_phone").value;
-    const email = (document.getElementById("walk_email")?.value).toLowerCase() || null;
+    const email = document.getElementById("walk_email").value || null;
 
-    const carId = document.getElementById("car_select").value;
-    const service = document.getElementById("wash_service").value;
-    
+    const selectedCarId = document.getElementById("car_select").value;
+    const serviceId = document.getElementById("wash_service").value;
 
-    if (!firstName || !lastName || !phone || !carId || !service) {
-        alert("Please fill all required fields");
+    if (!firstName || !lastName || !phone || !serviceId) {
+        showToast("Fill all required fields", "error");
         return;
     }
-console.log(staff)
-console.log(firstName)
-console.log(lastName)
-console.log(phone)
-console.log(email)
-console.log(carId)
-console.log(service)
+
     let customerId = null;
 
-    // STEP 1: check by phone
-    fetch(`http://localhost:5000/users?phone=${phone}`)
-        .then(res => res.json())
-        .then(customers => {
+    // 1. Get or create customer
+    const customers = await fetch(`http://localhost:5000/users?phone=${phone}`)
+        .then(res => res.json());
 
-            if (customers.length > 0) {
-                // existing customer
-                customerId = customers[0].id;
-                return customers[0];
-            }
+    if (customers.length > 0) {
+        customerId = customers[0].id;
+    } else {
+        const newCustomer = await fetch("http://localhost:5000/users", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                firstName,
+                lastName,
+                phone,
+                email,
+                role: "user",
+                createdAt: new Date().toISOString()
+            })
+        }).then(res => res.json());
 
-            // STEP 2: create new customer
-            return fetch("http://localhost:5000/users", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    firstName,
-                    lastName,
-                    phone,
-                    email,
-                    role: "user",
-                    createdAt: new Date().toISOString()
-                })
-            }).then(res => res.json());
-        })
+        customerId = newCustomer.id;
+    }
 
-        .then(customer => {
+    // 2. Handle car
+    let finalCarId = selectedCarId;
 
-            if (!customerId) {
-                customerId = customer.id;
-            }
-            
+    const carBlocks = document.querySelectorAll(".car-block");
 
-            // STEP 3: create wash
-            const wash = {
-                id: Date.now(),
+    if (!selectedCarId && carBlocks.length > 0) {
+        const block = carBlocks[0];
+
+        const plate = block.querySelector(".car-plate").value.toUpperCase();
+        const model = block.querySelector(".car-model").value;
+        const type = block.querySelector(".car-type").value;
+        const color = block.querySelector(".car-color").value;
+
+        const newCar = await fetch("http://localhost:5000/cars", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                plateNumber: plate,
+                model,
+                type,
+                color,
+                createdAt: new Date().toISOString()
+            })
+        }).then(res => res.json());
+
+        finalCarId = newCar.id;
+
+        // link car
+        await fetch("http://localhost:5000/customer_cars", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
                 customerId,
-                staffId: staff.id,
-                bookingId: null,
-                carId,
-                service,
-                type: "walk-in",
-                status: "started",
-                date: new Date().toISOString(),
-                paymentStatus: "unpaid"
-            };
-
-            return fetch("http://localhost:5000/washes", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(wash)
-            });
-        })
-
-        .then(res => res.json())
-        .then(() => {
-            alert(`Walk-in wash recorded successfully for ${firstName}`);
-            renderStaffDashboard();
-        })
-
-        .catch(err => {
-            console.error(err);
-            alert("Failed to record walk-in wash");
+                carId: finalCarId,
+                ownershipType: "primary",
+                createdAt: new Date().toISOString()
+            })
         });
+    }
+
+    // 3. Create wash
+    await fetch("http://localhost:5000/washes", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            id: Date.now().toString(),
+            customerId,
+            staffId: staff.id,
+            carId: finalCarId,
+            serviceId,
+            type: "walk-in",
+            status: "started",
+            date: new Date().toISOString(),
+            paymentStatus: "unpaid"
+        })
+    });
+
+    showToast("Walk-in wash recorded successfully!", "success");
+    renderStaffDashboard();
 }
 
 //this function is called when a staff starts a wash by clicking on the start button in the manage bookings table
@@ -1638,12 +1701,12 @@ function bookingWash(bookingId, bookings, staffId) {
     if (!booking) return;
 
     const wash = {
-        id: Date.now(),
+        id: Date.now().toString(),
         bookingId: bookingId,
         customerId: booking.customerId,
         staffId: staffId,
         carId: booking.carId,
-        service: booking.service,
+        serviceId: booking.serviceId,
         type: "booking",
         status: "started",
         date: new Date().toISOString(),
@@ -1654,6 +1717,8 @@ function bookingWash(bookingId, bookings, staffId) {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify(wash)
+    }).then(() => {
+        renderStaffDashboard();
     });
 }
 // changes wash status to complete
@@ -1693,7 +1758,7 @@ function recordPayment() {
 
     // ✅ Validation
     if (!car || !method || !total) {
-        alert("Please fill all required fields");
+        showToast("Please fill all required fields", "error");
         return;
     }
 
@@ -1701,7 +1766,7 @@ function recordPayment() {
 
     if (method === "split") {
         if (mpesaAmount + cashAmount !== total) {
-            alert("Split amounts must equal total amount");
+            showToast("Split amounts must equal total amount", "error");
             return;
         }
     }
@@ -1712,21 +1777,17 @@ function recordPayment() {
         .then(wash => {
 
             const payment = {
-                id: Date.now(),
-                customerId: wash.customerId,
-                staffId: wash.staffId,     
+                id: Date.now().toString(),
                 washId: washId,        
-                bookingId: wash.bookingId,
-                car,
                 type,
-                service,
                 method,
                 amount,
                 mpesaAmount,
                 cashAmount,
                 phone,
                 paymentRef,
-                date: new Date().toISOString()
+                date: new Date().toISOString(),
+                status: "completed"
             };
 
             // ✅ STEP 2: Save payment
@@ -1751,13 +1812,13 @@ function recordPayment() {
 
         // ✅ STEP 4: UI feedback
         .then(() => {
-            alert("Payment recorded successfully!");
+            showToast("Payment recorded successfully!", "success");
             renderStaffDashboard();
         })
 
         .catch(err => {
             console.error(err);
-            alert("Payment failed");
+            showToast("Payment failed", "error");
         });
 }
 //this function displays the phone input field when the mpesa item in dropdown is selected
@@ -1835,7 +1896,7 @@ function updateBookingStatus(bookingId, status, staffId) {
     })
     .then(res => res.json())
     .then(data => {
-        alert(`Booking ${status}!`);
+        showToast(`Booking ${status}!`, "success");
                     if (JSON.parse(localStorage.getItem("user")).role === "staff") {
                 renderStaffDashboard();
             } else {
@@ -1844,7 +1905,7 @@ function updateBookingStatus(bookingId, status, staffId) {
     })
     .catch(err => {
         console.error("Error recording wash status:", err);
-        alert("Failed to submit record. Please try again.");
+        showToast("Failed to submit record. Please try again.", "error");
     });
     
     
@@ -1856,161 +1917,247 @@ function updateBookingStatus(bookingId, status, staffId) {
 
 // ADMIN DASHBOARD
 function renderAdminDashboard() {
-
-    const payments = JSON.parse(localStorage.getItem("payments")) || [];
-    Promise.all([
-        fetch(`http://localhost:5000/users?`).then(res => res.json()),
-        fetch(`http://localhost:5000/bookings?`).then(res => res.json()),
-        fetch(`http://localhost:5000/washes?`).then(res => res.json()),
-        fetch(`http://localhost:5000/payments?`).then(res => res.json())
-    ])
-    .then(([users, bookings, washes, payments ]) => {
-    app.innerHTML = `
-        <div class="max-w-6xl mx-auto">
-            <div class="bg-white p-6 rounded-lg shadow mb-6">
-                <h2 class="text-2xl font-bold mb-2">Admin Dashboard</h2>
-                <p class="text-gray-600">Manage all bookings and payments</p>
-            </div>
-            
-            <!-- Statistics -->
-            <div class="grid md:grid-cols-3 gap-6 mb-6">
-            <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="font-bold">Total Users</h3>
-                    <p class="text-2xl">${users.length}</p>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="font-bold">Total Bookings</h3>
-                    <p class="text-2xl">${bookings.length}</p>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="font-bold">Pending Approvals</h3>
-                    <p class="text-2xl">${bookings.filter(b => b.bookingStatus === 'pending').length}</p>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <h3 class="font-bold">Total Payments</h3>
-                    <p class="text-2xl">Kes ${payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0)}</p>
-                </div>
-            </div>
-            
-            <div class="bg-white p-6 rounded-lg shadow">
-    <h3 class="text-xl font-bold mb-4">Manage Bookings</h3>
-
+    showLoading();
     
-        <div class="overflow-x-auto">
-            <table class="min-w-full border border-gray-200">
-                
-                <!-- TABLE HEADER -->
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="p-3 text-left">Car</th>
-                        <th class="p-3 text-left">Service</th>
-                        <th class="p-3 text-left">Date</th>
-                        <th class="p-3 text-left">Status</th>
-                        <th class="p-3 text-left">Actions</th>
-                    </tr>
-                </thead>
-
-                <!-- TABLE BODY -->
-                ${bookings.length === 0 
-                            ? `
-                            <tr>
-                                <td colspan="5" class="p-3 text-center text-gray-500">
-                                    No bookings yet
-                                </td>
-                            </tr>
-                         ` : `
-                    ${bookings.map(booking => `
-                         
-                        :<tr class="border-t">
-                            <td class="p-3">${booking.car}</td>
-                            <td class="p-3">${booking.service}</td>
-                            <td class="p-3">${new Date(booking.date).toLocaleString()}</td>
-                            
-                            <td class="p-3">
-                                <span class="
-                                    px-2 py-1 rounded text-sm
-                                    ${booking.bookingStatus === 'pending' ? 'bg-yellow-200' : ''}
-                                    ${booking.bookingStatus === 'approved' ? 'bg-blue-200' : ''}
-                                    ${booking.bookingStatus === 'rejected' ? 'bg-red-200' : ''}
-                                    ${booking.bookingStatus === 'started' ? 'bg-orange-200' : ''}
-                                    ${booking.bookingStatus === 'completed' ? 'bg-green-200' : ''}
-                                ">
-                                    ${booking.bookingStatus}
-                                </span>
-                            </td>
-
-                            <td class="p-3">
-                                ${booking.bookingStatus === 'pending' ? `
-                                    <button class="approve-btn bg-blue-200 text-white px-2 py-1 rounded mr-2 hover:bg-blue-300"
-                                            data-id="${booking.id}">
-                                        Approve
-                                    </button>
-
-                                    <button class="reject-btn bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                                            data-id="${booking.id}">
-                                        Reject
-                                    </button>
-                                                                    ` : 'Done'} 
-                            </td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-
-            </table>
-
-            
-        </div>
+    Promise.all([
+        fetch(`http://localhost:5000/users`).then(res => res.json()),
+        fetch(`http://localhost:5000/bookings`).then(res => res.json()),
+        fetch(`http://localhost:5000/washes`).then(res => res.json()),
+        fetch(`http://localhost:5000/payments`).then(res => res.json()),
+        fetch(`http://localhost:5000/cars`).then(res => res.json()),
+        fetch(`http://localhost:5000/services`).then(res => res.json()),
+        fetch(`http://localhost:5000/customer_cars`).then(res => res.json())
+    ])
+    .then(([users, bookings, washes, payments, cars, services, customerCars]) => {
         
-    `}
-     `;
-     document.querySelectorAll(".approve-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const id = btn.dataset.id;
-            updateBookingStatus(id, "approved");
+        // JOIN bookings with cars, services, and users for proper display
+        const joinedBookings = bookings.map(booking => {
+            const car = cars.find(c => c.id === booking.carId);
+            const service = services.find(s => s.id === booking.serviceId);
+            const customer = users.find(u => u.id === booking.customerId);
+            return {
+                ...booking,
+                carPlate: car?.plateNumber || 'N/A',
+                serviceName: service?.name || 'N/A',
+                servicePrice: service?.price || 0,
+                customerName: customer ? `${customer.firstName} ${customer.lastName}` : 'Unknown'
+            };
         });
+        
+        // Calculate revenue
+        const totalRevenue = payments.reduce((sum, p) => sum + (p.amount || 0), 0);
+        const pendingApprovals = bookings.filter(b => b.bookingStatus === 'pending').length;
+        
+        // Prepare cars with owners for Cars Management table
+        const carsWithOwners = cars.map(car => {
+            const customerCar = customerCars.find(cc => cc.carId === car.id);
+            const owner = users.find(u => u.id === customerCar?.customerId);
+            return {
+                ...car,
+                ownerName: owner ? `${owner.firstName} ${owner.lastName}` : 'Unassigned',
+                ownerId: owner?.id
+            };
+        });
+        
+        app.innerHTML = `
+            <div class="max-w-7xl mx-auto p-4">
+                <!-- Header -->
+                <div class="bg-white p-6 rounded-xl shadow mb-6">
+                    <h2 class="text-2xl font-bold">Admin Dashboard</h2>
+                    <p class="text-gray-600">Manage bookings, customers, and revenue</p>
+                </div>
+                
+                <!-- KPI Cards (EXCELLED LEVEL) -->
+                <div class="grid md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-blue-500">
+                        <h3 class="text-gray-500 text-sm">Total Users</h3>
+                        <p class="text-2xl font-bold">${users.length}</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-green-500">
+                        <h3 class="text-gray-500 text-sm">Total Bookings</h3>
+                        <p class="text-2xl font-bold">${bookings.length}</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-yellow-500">
+                        <h3 class="text-gray-500 text-sm">Pending Approvals</h3>
+                        <p class="text-2xl font-bold">${pendingApprovals}</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-xl shadow border-l-4 border-purple-500">
+                        <h3 class="text-gray-500 text-sm">Total Revenue</h3>
+                        <p class="text-2xl font-bold">Kes ${totalRevenue.toLocaleString()}</p>
+                    </div>
+                </div>
+                
+                <!-- Bookings Management -->
+                <div class="bg-white p-6 rounded-xl shadow mb-6">
+                    <h3 class="text-xl font-bold mb-4">Manage Bookings</h3>
+                    <input type="text" id="searchAdminBookings" placeholder="Search by car, service, or customer..." 
+                           class="w-full mb-4 p-2 border rounded">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full" id="adminBookingsTable">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-3 text-left">Customer</th>
+                                    <th class="p-3 text-left">Car</th>
+                                    <th class="p-3 text-left">Service</th>
+                                    <th class="p-3 text-left">Date</th>
+                                    <th class="p-3 text-left">Status</th>
+                                    <th class="p-3 text-left">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${joinedBookings.length === 0 ? `
+                                    <tr><td colspan="6" class="p-3 text-center">No bookings yet</td></tr>
+                                ` : joinedBookings.map(booking => `
+                                    <tr class="border-t hover:bg-gray-50">
+                                        <td class="p-3">${booking.customerName}</td>
+                                        <td class="p-3">${booking.carPlate}</td>
+                                        <td class="p-3 capitalize">${booking.serviceName}</td>
+                                        <td class="p-3">${new Date(booking.date).toLocaleString()}</td>
+                                        <td class="p-3">
+                                            <span class="px-2 py-1 rounded text-sm ${
+                                                booking.bookingStatus === 'pending' ? 'bg-yellow-200' :
+                                                booking.bookingStatus === 'approved' ? 'bg-green-200' :
+                                                booking.bookingStatus === 'rejected' ? 'bg-red-200' :
+                                                'bg-gray-200'
+                                            }">
+                                                ${booking.bookingStatus}
+                                            </span>
+                                        </td>
+                                        <td class="p-3">
+                                            ${booking.bookingStatus === 'pending' ? `
+                                                <button class="approve-btn bg-green-500 text-white px-3 py-1 rounded mr-2 hover:bg-green-600" data-id="${booking.id}">
+                                                    Approve
+                                                </button>
+                                                <button class="reject-btn bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600" data-id="${booking.id}">
+                                                    Reject
+                                                </button>
+                                            ` : '—'}
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Cars Management (EXCELLED FEATURE) -->
+                <div class="bg-white p-6 rounded-xl shadow">
+                    <h3 class="text-xl font-bold mb-4">Cars Management</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="p-3 text-left">Plate Number</th>
+                                    <th class="p-3 text-left">Model</th>
+                                    <th class="p-3 text-left">Type</th>
+                                    <th class="p-3 text-left">Color</th>
+                                    <th class="p-3 text-left">Owner</th>
+                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${carsWithOwners.map(car => `
+                                    <tr class="border-t hover:bg-gray-50">
+                                        <td class="p-3 font-mono">${car.plateNumber}</td>
+                                        <td class="p-3">${car.model}</td>
+                                        <td class="p-3">${car.type}</td>
+                                        <td class="p-3">${car.color}</td>
+                                        <td class="p-3">${car.ownerName}</td>
+                                        
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 pt-4 border-t">
+                        <h4 class="font-bold mb-2">Add New Car</h4>
+                        <div class="grid md:grid-cols-5 gap-2">
+                            <input id="new_plate" placeholder="Plate Number" class="border p-2 rounded">
+                            <input id="new_model" placeholder="Model" class="border p-2 rounded">
+                            <select id="new_type" class="border p-2 rounded">
+                                <option>SUV</option>
+                                <option>Saloon</option>
+                                <option>Hatchback</option>
+                                <option>Van / MPV</option>
+                                <option>Pickup</option>
+                            </select>
+                            <input id="new_color" placeholder="Color" class="border p-2 rounded">
+                            <button onclick="addNewCar()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                                Add Car
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add search functionality for admin bookings
+        const searchInput = document.getElementById("searchAdminBookings");
+        if(searchInput) {
+            searchInput.addEventListener("input", (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const rows = document.querySelectorAll("#adminBookingsTable tbody tr");
+                rows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? "" : "none";
+                });
+            });
+        }
+        
+        // Attach event listeners
+        document.querySelectorAll(".approve-btn").forEach(btn => {
+            btn.addEventListener("click", () => updateBookingStatus(btn.dataset.id, "approved", null));
+        });
+        document.querySelectorAll(".reject-btn").forEach(btn => {
+            btn.addEventListener("click", () => updateBookingStatus(btn.dataset.id, "rejected", null));
+        });
+        
+        
+    })
+    .catch(err => {
+        console.error(err);
+        app.innerHTML = `<div class="text-center text-red-500 p-8">Error loading admin dashboard: ${err.message}</div>`;
     });
+}
 
-    document.querySelectorAll(".reject-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const id = btn.dataset.id;
-            updateBookingStatus(id, "rejected");
-        });
-    });
-        })
-        .catch(err => {
-            console.error(err);
-            alert("Error loading bookings");
-        });
+// Add new car function 
+function addNewCar() {
+    const plate = document.getElementById("new_plate")?.value.toUpperCase();
+    const model = document.getElementById("new_model")?.value;
+    const type = document.getElementById("new_type")?.value;
+    const color = document.getElementById("new_color")?.value;
+    
+    if (!plate || !model || !type || !color) {
+        showToast("Please fill all car fields", "error");
+        return;
     }
-
+    
+    const newCar = {
+        id: Date.now().toString(),
+        plateNumber: plate,
+        model: model,
+        type: type,
+        color: color,
+        createdAt: new Date().toISOString()
+    };
+    
+    fetch("http://localhost:5000/cars", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCar)
+    })
+    .then(res => res.json())
+    .then(() => {
+        showToast("Car added successfully!", "success");
+        renderAdminDashboard();
+    })
+    .catch(err => {
+        console.error(err);
+        showToast("Failed to add car", "error");
+    });
+}
 
 // API FUNCTIONS
-
-
-
-
-
-
-
-
-// function attachAdminBookingEvents() {
-
-    
-//     document.querySelectorAll(".start-btn").forEach(btn => {
-//         btn.addEventListener("click", () => {
-//             const id = btn.dataset.id;
-//             updateBookingStatus(id, "in-progress");
-//         });
-//     });
-
-//     document.querySelectorAll(".complete-btn").forEach(btn => {
-//         btn.addEventListener("click", () => {
-//             const id = btn.dataset.id;
-//             updateBookingStatus(id, "completed");
-//         });
-//     });
-    
-// }
 
 // Initialize app
 initApp();
@@ -2020,4 +2167,3 @@ window.addEventListener("hashchange", () => {
     const page = window.location.hash.slice(1) || "home";
     navigate(page);
 });
-
