@@ -2,9 +2,9 @@
   "users": [
     {
       "firstName": "Deogracious",
-      "lastName": "",
+      "lastName": "Moriasi",
       "email": "deomosweta265@gmail.com",
-      "phone": "0712345678",
+      "phone": "0712345673",
       "password": "Deo12345",
       "role": "user",
       "id": "sDVLSYyW7Uo"
@@ -13,117 +13,335 @@
       "firstName": "Jane",
       "lastName": "Mbogo",
       "email": "jmbogo@gmail.com",
-      "phone": "0712345678",
+      "phone": "0712345674",
       "password": "Jane1234",
       "role": "admin",
-      "id": "kOFjUxy9cIk"
+      "id": "kOFjUxy9cIk",
+      "createdAt": "...",
+      "updatedAt": "..."
     },
     {
       "firstName": "Juma",
       "lastName": "Anderson",
       "email": "jumaanderson@gmail.com",
-      "phone": "0712345678",
+      "phone": "0712345675",
       "password": "Juma1234",
       "role": "user",
-      "id": "xHRd3nO9qZE"
+      "id": "xHRd3nO9qZE",
+      "createdAt": "...",
+      "updatedAt": "..."
     },
     {
       "firstName": "Julia",
       "lastName": "Sanders",
       "email": "juliasanders@gmail.com",
-      "phone": "0712345678",
+      "phone": "0712345676",
       "password": "Julia123",
       "role": "staff",
-      "id": "94E2P4iuH4s"
+      "id": "94E2P4iuH4s",
+      "createdAt": "...",
+      "updatedAt": "..."
     },
     {
-      "id": "Wv0oJzrj6Hg",
       "firstName": "John",
       "lastName": "Juma",
       "email": "jjuma2@gmail.com",
-      "phone": "0712345678",
+      "phone": "0712345677",
       "password": "Juma1234",
-      "role": "user"
+      "role": "staff",
+      "id": "Wv0oJzrj6Hg",
+      "createdAt": "...",
+      "updatedAt": "..."
+    },
+    {
+      "firstName": "Deogracious",
+      "lastName": "Moriasi",
+      "phone": "0712345673",
+      "email": "deomosweta265@gmail.com",
+      "role": "user",
+      "id": "6sQdJjjEgXU",
+      "createdAt": "2026-04-18T22:30:15.493Z",
+      "updatedAt": "..."
+    },
+    {
+      "firstName": "Deogracious",
+      "lastName": "Moriasi",
+      "phone": "0712345673",
+      "email": "deomosweta265@gmail.com",
+      "role": "user",
+      "id": "_2Gzdher38E",
+      "createdAt": "2026-04-18T22:33:01.349Z",
+      "updatedAt": "..."
+    }
+  ],
+  "cars": [
+    {
+      "id": "car1",
+      "plateNumber": "KDA 123A",
+      "model": "Toyota Premio",
+      "type": "Saloon",
+      "color": "Silver",
+      "createdAt": "..."
+    },
+    {
+      "id": "car2",
+      "plateNumber": "KDB 456B",
+      "model": "Toyota Harrier",
+      "type": "SUV",
+      "color": "Black",
+      "createdAt": "..."
+    },
+    {
+      "id": "car3",
+      "plateNumber": "KDC 789C",
+      "model": "Toyota Vitz",
+      "type": "Hatchback",
+      "color": "Red",
+      "createdAt": "..."
+    }
+  ],
+  "customer_cars": [
+    {
+      "id": "cc1",
+      "customerId": "sDVLSYyW7Uo",
+      "carId": "car1",
+      "ownershipType": "primary",
+      "createdAt": "2026-04-18T10:00:00.000Z",
+      "updatedAt": "2026-04-18T10:04:00.000Z"
+    },
+    {
+      "id": "cc2",
+      "customerId": "sDVLSYyW7Uo",
+      "carId": "car2",
+      "ownershipType": "primary",
+      "createdAt": "2026-04-18T10:05:00.000Z",
+      "updatedAt": "2026-04-18T10:07:00.000Z"
+    },
+    {
+      "id": "cc3",
+      "customerId": "94E2P4iuH4s",
+      "carId": "car2",
+      "ownershipType": "secondary",
+      "createdAt": "2026-04-18T10:06:00.000Z",
+      "updatedAt": "2026-04-18T10:09:00.000Z"
+    },
+    {
+      "id": "cc4",
+      "customerId": "xHRd3nO9qZE",
+      "carId": "car3",
+      "ownershipType": "primary",
+      "createdAt": "2026-04-18T10:07:00.000Z",
+      "updatedAt": "2026-04-18T10:09:00.000Z"
+    }
+  ],
+  "services": [
+    {
+      "id": "1",
+      "name": "basic",
+      "price": 500
+    },
+    {
+      "id": "2",
+      "name": "deluxe",
+      "price": 1500
+    },
+    {
+      "id": "3",
+      "name": "premium",
+      "price": 3000
     }
   ],
   "bookings": [
     {
-      "id": "24V1GJzuqXk",
-      "userId": "sDVLSYyW7Uo",
-      "date": "2026-04-16T11:35",
-      "service": "basic",
-      "car": "KDB 573V",
+      "id": "XJLMQ4gMrhE",
+      "customerId": "sDVLSYyW7Uo",
+      "carId": "car1",
+      "serviceId": "1",
+      "date": "2026-04-17T09:47",
       "bookingStatus": "completed",
-      "status": "approved"
+      "staffId": "94E2P4iuH4s"
     },
     {
-      "id": "J5OWYzU0KRo",
-      "userId": "sDVLSYyW7Uo",
-      "date": "2026-04-17T13:55",
-      "service": "premium",
-      "car": "KZX 543X",
-      "bookingStatus": "completed"
+      "id": "3ReOEXXjsHg",
+      "customerId": "sDVLSYyW7Uo",
+      "carId": "car1",
+      "serviceId": "1",
+      "date": "2026-04-17T09:21",
+      "bookingStatus": "completed",
+      "staffId": "94E2P4iuH4s"
+    },
+    {
+      "id": "V-JUt_NxTGc",
+      "customerId": "sDVLSYyW7Uo",
+      "carId": "car1",
+      "serviceId": "3",
+      "date": "2026-04-17T11:54",
+      "bookingStatus": "completed",
+      "staffId": "Wv0oJzrj6Hg"
+    },
+    {
+      "id": "dfJgmXbT-XI",
+      "customerId": "sDVLSYyW7Uo",
+      "carId": "car2",
+      "serviceId": "3",
+      "date": "2026-04-18T21:38",
+      "bookingStatus": "started",
+      "staffId": "94E2P4iuH4s"
+      
+    },
+    {
+      "id": "v8imGsUpTzg",
+      "customerId": "sDVLSYyW7Uo",
+      "staffId": null,
+      "carId": "car1",
+      "serviceId": "1",
+      "date": "2026-04-20T03:53",
+      "bookingStatus": "pending"
+    },
+    {
+      "id": "2XuvjDezqBs",
+      "customerId": "sDVLSYyW7Uo",
+      "staffId": null,
+      "carId": "car2",
+      "serviceId": "2",
+      "date": "2026-04-23T03:54",
+      "bookingStatus": "pending"
     }
   ],
   "washes": [
     {
-      "id": "UhYZQ5qqCp8",
-      "car": "KXV 753V",
-      "service": "basic",
-      "status": "in-progress",
-      "date": "2026-04-15T11:53:02.924Z"
-    },
-    {
-      "id": "gXAFDbJe8MA",
-      "car": "KXV 753V",
-      "service": "basic",
+      "id": "KGuMVF-f3es",
+      "bookingId": "3ReOEXXjsHg",
+      "customerId": "sDVLSYyW7Uo",
+      "staffId": "94E2P4iuH4s",
+      "carId": "car1",
+      "serviceId": "1",
+      "type": "booking",
       "status": "completed",
-      "date": "2026-04-15T12:01:45.747Z"
+      "date": "2026-04-18T13:50:06.028Z",
+      "paymentStatus": "paid"
     },
     {
-      "id": "cnLvtG6LSRY",
-      "car": "KXV 753V",
-      "service": "basic",
+      "id": "WRFDtLONKcs",
+      "bookingId": "XJLMQ4gMrhE",
+      "customerId": "sDVLSYyW7Uo",
+      "staffId": "94E2P4iuH4s",
+      "carId": "car1",
+      "serviceId": "1",
+      "type": "booking",
       "status": "completed",
-      "date": "2026-04-15T14:50:22.683Z"
+      "date": "2026-04-18T14:27:11.280Z",
+      "paymentStatus": "paid"
     },
     {
-      "id": "93hZPNGfIXs",
-      "car": "KXV 753V",
-      "service": "basic",
-      "status": "in-progress",
-      "date": "2026-04-15T14:51:50.556Z"
-    },
-    {
-      "id": "4DcpZlOBLtA",
-      "car": "KXV 753V",
-      "service": "basic",
+      "id": "dYr2y2RtkBE",
+      "bookingId": "V-JUt_NxTGc",
+      "customerId": "sDVLSYyW7Uo",
+      "staffId": "Wv0oJzrj6Hg",
+      "carId": "car1",
+      "serviceId": "3",
+      "type": "booking",
       "status": "completed",
-      "date": "2026-04-15T14:52:52.986Z"
+      "date": "2026-04-18T15:08:26.455Z",
+      "paymentStatus": "paid"
     },
     {
-      "id": "zsA5SKb2rL4",
-      "car": "KXV 753V",
-      "service": "basic",
-      "status": "in-progress",
-      "date": "2026-04-15T14:55:20.343Z"
+      "id": "6P_anVUMuvM",
+      "bookingId": "dfJgmXbT-XI",
+      "customerId": "sDVLSYyW7Uo",
+      "staffId": "94E2P4iuH4s",
+      "carId": "car2",
+      "serviceId": "3",
+      "type": "booking",
+      "status": "completed",
+      "date": "2026-04-18T16:40:03.201Z",
+      "paymentStatus": "paid"
     },
     {
-      "id": "onCN8w10MnQ",
-      "car": "KXV 753V",
-      "service": "premium",
-      "status": "in-progress",
-      "date": "2026-04-15T14:56:04.567Z"
+      "id": "uSbTg1iE6RY",
+      "staffId": "94E2P4iuH4s",
+      "customerId": "sDVLSYyW7Uo",
+      "carId": "car1",
+      "serviceId": "1",
+      "type": "walk-in",
+      "status": "started",
+      "date": "2026-04-18T18:15:38.663Z",
+      "paymentStatus": "unpaid"
+    },
+    {
+      "id": "fxw6BUYbojo",
+      "customerId": "6sQdJjjEgXU",
+      "staffId": "94E2P4iuH4s",
+      "carId": "car1",
+      "serviceId": "1",
+      "type": "walk-in",
+      "status": "started",
+      "date": "2026-04-18T22:30:15.559Z",
+      "paymentStatus": "unpaid"
+    },
+    {
+      "id": "VqZdsux9uBM",
+      "customerId": "_2Gzdher38E",
+      "staffId": "94E2P4iuH4s",
+      "carId": "car3",
+      "serviceId": "1",
+      "type": "walk-in",
+      "status": "started",
+      "date": "2026-04-18T22:33:01.373Z",
+      "paymentStatus": "unpaid"
     }
   ],
   "payments": [
     {
-      "id": "6nVdbwr1D9c",
-      "car": "KXV 753V",
+      "id": "WJM4sODQOag",
+      "washId": "KGuMVF-f3es",
+      "type": "booking",
+      "method": "cash",
+      "amount": 500,
+      "mpesaAmount": 0,
+      "cashAmount": 0,
+      "phone": null,
+      "paymentRef": null,
+      "date": "2026-04-18T14:39:42.314Z",
+      "status": "completed"
+    },
+    {
+      "id": "zV_PMOxbsDU",
+      "washId": "WRFDtLONKcs",
+      "type": "booking",
       "method": "mpesa",
-      "amount": "10",
-      "paymentRef": "TXV45FRE3WST",
-      "date": "2026-04-16T19:44:24.538Z"
+      "amount": 500,
+      "mpesaAmount": 0,
+      "cashAmount": 0,
+      "phone": "0712345673",
+      "paymentRef": "txv67tze3hyt",
+      "date": "2026-04-18T14:46:32.813Z",
+      "status": "completed"
+    },
+    {
+      "id": "hF-wbRMrkU8",
+      "washId": "dYr2y2RtkBE",
+      "method": "cash",
+      "amount": 3000,
+      "mpesaAmount": 0,
+      "cashAmount": 0,
+      "phone": null,
+      "paymentRef": null,
+      "date": "2026-04-18T15:08:46.184Z",
+      "status": "completed"
+    },
+    {
+      "id": "Mjzxy2UkLRA",
+      "washId": "6P_anVUMuvM",
+      "car": "KZX 543X",
+      "method": "cash",
+      "amount": 1500,
+      "mpesaAmount": 0,
+      "cashAmount": 0,
+      "phone": null,
+      "paymentRef": null,
+      "date": "2026-04-18T17:07:33.306Z",
+      "status": "completed"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
