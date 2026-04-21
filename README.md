@@ -30,11 +30,11 @@ The platform simulates a real-world workflow similar to dispatch systems (e.g., 
 ### 👨‍🔧 Staff Features
 
 * View only relevant bookings (approved & active)
-* Start a wash (automatically assigns the staff member)
-* Complete only washes assigned to them
+* Start a wash (on staff clicking start the wash is automatically assigned to them)
+* Complete only washes assigned to them (the ones they started
 * Record payments after completion
 * Auto-filled payment form based on service selected
-* Search bookings by car plate number
+* Search customer by phone and autofill the details
 
 ---
 
@@ -42,7 +42,7 @@ The platform simulates a real-world workflow similar to dispatch systems (e.g., 
 
 * View all bookings in the system
 * Approve or reject booking requests
-* Monitor system activity
+* Monitor system activity and revenue
 
 ---
 
@@ -53,7 +53,7 @@ The platform simulates a real-world workflow similar to dispatch systems (e.g., 
 
    * Approves → **Status: Approved**
    * Rejects → **Hidden from staff**
-3. Staff starts job → **Status: In Progress**
+3. Staff starts job → **Status: started**
 
    * Staff is assigned to the job
 4. Staff completes job → **Status: Completed**
