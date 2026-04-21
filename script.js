@@ -692,7 +692,7 @@ function currentCustomerWashesHTML(currentWashes) {
         </div>`
                         }
 
-function cutomerWashesHTML(myWashes){
+function customerWashesHTML(myWashes){
                             return `
                             <div class="bg-white p-6 rounded-xl shadow mt-6">
     <h3 class="text-lg font-semibold mb-4">My washes</h3>
