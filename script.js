@@ -457,7 +457,7 @@ const joinedMyPayments = joinPaymentsByWash(
                 <!-- Current Washes -->
             ${currentCustomerWashesHTML(joinedCurrentWashes)}
                 <!-- My Washes -->
-            ${myWashesHTML(joinedMyWashes)}
+            ${customerWashesHTML(joinedMyWashes)}
                 <!-- My Payments -->
                 </div>
             ${myPaymentsHTML(joinedMyPayments)}
@@ -692,7 +692,7 @@ function currentCustomerWashesHTML(currentWashes) {
         </div>`
                         }
 
-function myWashesHTML(myWashes){
+function cutomerWashesHTML(myWashes){
                             return `
                             <div class="bg-white p-6 rounded-xl shadow mt-6">
     <h3 class="text-lg font-semibold mb-4">My washes</h3>
